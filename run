@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -ev
+
+# The first argument is the location of the reads in the container filesystem.
+# The will be present in a read-only directory
+READS=$1
+
+# The second argument is a directory with write-access where the final
+# assembly should be written to.
+DIR=$2
+LOG=$DIR/log.txt
+
+# The assembly should be written to the file "contigs.fa" in the output directory
+ASSEMBLY=$DIR/contigs.fa
+
+TMP_DIR=`mktemp -d`
+
+cd $TMP_DIR
+
+gunzip $READS --stdout > reads.fq
+/split < reads.fq read_1.fq read_2.fq
+
+abyss-pe k=25 name=genome in='read_1.fq read_2.fq' > $LOG 2>&1
+
+
+cp genome-contigs.fa $ASSEMBLY
+
+rm reads.fq read_1.fq read_2.fq
