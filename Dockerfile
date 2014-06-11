@@ -5,7 +5,7 @@ RUN echo "deb http://http.debian.net/debian jessie main contrib non-free" > /etc
 RUN apt-get update -y
 RUN apt-get install -y abyss
 
-ADD run run
-ADD split split
+ADD run /
+ADD split /
 
-ENTRYPOINT ["./run"]
+ENTRYPOINT ["/run"]
