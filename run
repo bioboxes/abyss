@@ -1,29 +1,32 @@
 #!/bin/bash
 
-set -ev
+set -o errexit
+set -o nounset
 
-# The first argument is the location of the reads in the container filesystem.
-# The will be present in a read-only directory
-READS=$1
+# Source reads
+READS=$2
 
-# The second argument is a directory with write-access where the final
-# assembly should be written to.
-DIR=$2
+# Destination directory
+DIR=$3
+ASSEMBLY=$DIR/contigs.fa
 LOG=$DIR/log.txt
 
-# The assembly should be written to the file "contigs.fa" in the output directory
-ASSEMBLY=$DIR/contigs.fa
+exec > >(tee ${LOG})
+exec 2>&1
+set -o xtrace
+
+# Determine which process to run
+PROC=$1
+CMD=$(egrep ^${PROC}: /Procfile | cut -f 2 -d ':')
+
+if [[ -z ${CMD} ]]; then
+  echo "Abort, no proc found for ${PROC}."
+  exit 1
+fi
 
 TMP_DIR=`mktemp -d`
-
 cd $TMP_DIR
 
-gunzip $READS --stdout > reads.fq
-/split < reads.fq read_1.fq read_2.fq
-
-abyss-pe k=25 name=genome in='read_1.fq read_2.fq' > $LOG 2>&1
-
+eval ${CMD}
 
 cp genome-contigs.fa $ASSEMBLY
-
-rm reads.fq read_1.fq read_2.fq
