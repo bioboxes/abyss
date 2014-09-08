@@ -1,2 +1,10 @@
-default: abyss-pe k=25 name=genome in=${READS}
+k-24: abyss-pe k=24 name=genome in=${READS}
+k-32: abyss-pe k=32 name=genome in=${READS}
+k-40: abyss-pe k=40 name=genome in=${READS}
+k-48: abyss-pe k=48 name=genome in=${READS}
+k-56: abyss-pe k=56 name=genome in=${READS}
 k-64: abyss-pe k=64 name=genome in=${READS}
+k-72: abyss-pe k=72 name=genome in=${READS}
+k-80: abyss-pe k=80 name=genome in=${READS}
+k-88: abyss-pe k=88 name=genome in=${READS}
+k-96: abyss-pe k=96 name=genome in=${READS}
