@@ -3,9 +3,7 @@ MAINTAINER Michael Barton, mail@michaelbarton.me.uk
 
 RUN echo "deb http://http.debian.net/debian jessie main contrib non-free" > /etc/apt/sources.list
 RUN apt-get update -y
-RUN apt-get install -y libsparsehash-dev libboost-all-dev openmpi-bin gcc build-essential make autoconf bsdmainutils
-
-RUN apt-get install -y r-base
+RUN apt-get install -y libsparsehash-dev libboost-all-dev openmpi-bin gcc build-essential make autoconf bsdmainutils r-base-core
 
 ADD http://kmergenie.bx.psu.edu/kmergenie-1.6741.tar.gz /tmp/kmergenie.tar.gz
 RUN mkdir /tmp/kmergenie
