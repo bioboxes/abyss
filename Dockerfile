@@ -13,7 +13,12 @@ RUN cd /tmp/kmergenie && make && make install
 ADD https://github.com/bcgsc/abyss/releases/download/1.5.2/abyss-1.5.2.tar.gz /tmp/abyss.tar.gz
 RUN mkdir /tmp/abyss
 RUN tar xzf /tmp/abyss.tar.gz --directory /tmp/abyss --strip-components=1
-RUN cd /tmp/abyss && ./configure && make && make install
+
+# See https://github.com/bcgsc/abyss/wiki/ABySS-Users-FAQ
+RUN cd /tmp/abyss && \
+       ./configure --enable-maxk=128 && \
+       make && \
+       make install
 
 ADD run /usr/local/bin/
 ADD estimate_kmer /usr/local/bin/
