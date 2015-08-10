@@ -1,24 +1,36 @@
 FROM debian:jessie
 MAINTAINER Michael Barton, mail@michaelbarton.me.uk
 
-RUN echo "deb http://http.debian.net/debian jessie main contrib non-free" > /etc/apt/sources.list
-RUN apt-get update -y
-RUN apt-get install -y libsparsehash-dev libboost-all-dev openmpi-bin gcc make autoconf bsdmainutils r-base-core python
+ENV SOURCES="\
+  deb http://http.debian.net/debian jessie main contrib non-free \n\
+  deb http://debian.bioboxes.org stable main" 
 
-ADD http://kmergenie.bx.psu.edu/kmergenie-1.6741.tar.gz /tmp/kmergenie.tar.gz
-RUN mkdir /tmp/kmergenie
-RUN tar xzf /tmp/kmergenie.tar.gz --directory /tmp/kmergenie --strip-components=1
-RUN cd /tmp/kmergenie && make && make install
+ENV PACKAGES \
+	autoconf \
+	bsdmainutils \
+	g++ \
+	libsparsehash-dev \
+	libsqlite3-dev \
+	make \
+	openmpi-bin \
+	xz-utils \
+        ca-certificates \
+        libboost-all-dev \
+        wget
 
-ADD https://github.com/bcgsc/abyss/releases/download/1.5.2/abyss-1.5.2.tar.gz /tmp/abyss.tar.gz
-RUN mkdir /tmp/abyss
-RUN tar xzf /tmp/abyss.tar.gz --directory /tmp/abyss --strip-components=1
+RUN echo ${SOURCES} > /etc/apt/sources.list
+RUN apt-get update -y && apt-get install -y --no-install-recommends ${PACKAGES}
+RUN apt-get install -y --no-install-recommends --allow-unauthenticated validate-biobox-file
 
-# See https://github.com/bcgsc/abyss/wiki/ABySS-Users-FAQ
-RUN cd /tmp/abyss && \
-       ./configure --enable-maxk=128 && \
-       make && \
-       make install
+ENV ASSEMBLER_DIR /tmp/assembler
+ENV ASSEMBLER_URL https://github.com/bcgsc/abyss/releases/download/1.9.0/abyss-1.9.0.tar.gz
+ENV ASSEMBLER_BLD ./configure --enable-maxk=128 && make && make install
+
+RUN mkdir ${ASSEMBLER_DIR}
+RUN cd ${ASSEMBLER_DIR} &&\
+    wget --quiet ${ASSEMBLER_URL} --output-document - |\
+    tar xzf - --directory . --strip-components=1 && eval ${ASSEMBLER_BLD} && \
+    rm -rf ${ASSEMBLER_DIR}
 
 ADD run /usr/local/bin/
 ADD estimate_kmer /usr/local/bin/
