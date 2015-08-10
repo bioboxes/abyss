@@ -32,6 +32,14 @@ RUN cd ${ASSEMBLER_DIR} &&\
     tar xzf - --directory . --strip-components=1 && eval ${ASSEMBLER_BLD} && \
     rm -rf ${ASSEMBLER_DIR}
 
+# Needed to convert yaml schema to json
+ENV CONVERT https://github.com/bronze1man/yaml2json/raw/master/builds/linux_386/yaml2json
+RUN cd /usr/local/bin && wget --quiet ${CONVERT} && chmod 700 yaml2json
+
+# Need jq 1.5rc2 not currently available in debian packages
+ENV JQ http://stedolan.github.io/jq/download/linux64/jq
+RUN cd /usr/local/bin && wget --quiet ${JQ} && chmod 700 jq
+
 ADD assemble /usr/local/bin/
 ADD Taskfile /
 ENTRYPOINT ["assemble"]

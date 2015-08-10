@@ -3,30 +3,35 @@
 set -o errexit
 set -o nounset
 
-# Source reads
-READS=$2
+INPUT=/bbx/input/biobox.yaml
+OUTPUT=/bbx/output
+METADATA=/bbx/metadata
 
-# Destination directory
-DIR=$3
-ASSEMBLY=$DIR/contigs.fa
-LOG=$DIR/log.txt
+# Ensure the biobox.yaml file is valid
+validate-biobox-file \
+  --input ${INPUT} \
+  --schema /schema.yaml \
 
-exec > >(tee ${LOG})
-exec 2>&1
-set -o xtrace
-
-# Determine which process to run
-PROC=$1
-CMD=$(egrep ^${PROC}: /Procfile | cut -f 2 -d ':')
-
+# Get the task to run from grepping value out of the taskfile
+TASK=$1
+CMD=$(egrep ^${TASK}: /Taskfile | cut -f 2 -d ':')
 if [[ -z ${CMD} ]]; then
-  echo "Abort, no proc found for ${PROC}."
+  echo "Abort, no task found for '${TASK}'."
   exit 1
 fi
 
-TMP_DIR=`mktemp -d`
-cd $TMP_DIR
+# if /bbx/metadata is mounted create log.txt
+if [ -d "$METADATA" ]; then
+  CMD="($CMD) >& $METADATA/log.txt"
+  set -o xtrace
+fi
 
+# Parse the read locations from the biobox file using jq
+READS=$(yaml2json < ${INPUT} \
+        | jq --raw-output '.arguments[] | select(has("fastq")) | .fastq[].value"' \
+        | tr '\n' ' ')
+
+TMP_DIR=$(mktemp -d)
+cd ${TMP_DIR}
 eval ${CMD}
-
-cp genome-contigs.fa $ASSEMBLY
+cp genome-contigs.fa ${OUTPUT}/contigs.fa
