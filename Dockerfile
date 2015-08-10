@@ -32,8 +32,6 @@ RUN cd ${ASSEMBLER_DIR} &&\
     tar xzf - --directory . --strip-components=1 && eval ${ASSEMBLER_BLD} && \
     rm -rf ${ASSEMBLER_DIR}
 
-ADD run /usr/local/bin/
-ADD estimate_kmer /usr/local/bin/
-ADD Procfile /
-
-ENTRYPOINT ["run"]
+ADD assemble /usr/local/bin/
+ADD Taskfile /
+ENTRYPOINT ["assemble"]
