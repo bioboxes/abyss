@@ -3,14 +3,14 @@ MAINTAINER Michael Barton, mail@michaelbarton.me.uk
 
 RUN echo "deb http://http.debian.net/debian jessie main contrib non-free" > /etc/apt/sources.list
 RUN apt-get update -y
-RUN apt-get install -y libsparsehash-dev libboost-all-dev openmpi-bin gcc make autoconf bsdmainutils r-base-core python
+RUN apt-get install -y libsparsehash-dev libboost-all-dev libsqlite3-dev openmpi-bin gcc make autoconf bsdmainutils r-base-core python
 
 ADD http://kmergenie.bx.psu.edu/kmergenie-1.6741.tar.gz /tmp/kmergenie.tar.gz
 RUN mkdir /tmp/kmergenie
 RUN tar xzf /tmp/kmergenie.tar.gz --directory /tmp/kmergenie --strip-components=1
 RUN cd /tmp/kmergenie && make && make install
 
-ADD https://github.com/bcgsc/abyss/releases/download/1.5.2/abyss-1.5.2.tar.gz /tmp/abyss.tar.gz
+ADD https://github.com/bcgsc/abyss/releases/download/1.9.0/abyss-1.9.0.tar.gz /tmp/abyss.tar.gz
 RUN mkdir /tmp/abyss
 RUN tar xzf /tmp/abyss.tar.gz --directory /tmp/abyss --strip-components=1
 
