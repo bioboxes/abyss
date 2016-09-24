@@ -1,27 +1,8 @@
-FROM debian:jessie
-MAINTAINER Michael Barton, mail@michaelbarton.me.uk
+FROM bioboxes/biobox-minimal-base@sha256:908bc44aaa5de9a9b519cc3548b7d1e37c8f4f71a815f43ea71091e2980e9974
 
-RUN echo "deb http://http.debian.net/debian jessie main contrib non-free" > /etc/apt/sources.list
-RUN apt-get update -y
-RUN apt-get install -y libsparsehash-dev libboost-all-dev openmpi-bin gcc make autoconf bsdmainutils r-base-core python
+ADD image /usr/local
+RUN install.sh
 
-ADD http://kmergenie.bx.psu.edu/kmergenie-1.6741.tar.gz /tmp/kmergenie.tar.gz
-RUN mkdir /tmp/kmergenie
-RUN tar xzf /tmp/kmergenie.tar.gz --directory /tmp/kmergenie --strip-components=1
-RUN cd /tmp/kmergenie && make && make install
-
-ADD https://github.com/bcgsc/abyss/releases/download/1.5.2/abyss-1.5.2.tar.gz /tmp/abyss.tar.gz
-RUN mkdir /tmp/abyss
-RUN tar xzf /tmp/abyss.tar.gz --directory /tmp/abyss --strip-components=1
-
-# See https://github.com/bcgsc/abyss/wiki/ABySS-Users-FAQ
-RUN cd /tmp/abyss && \
-       ./configure --enable-maxk=128 && \
-       make && \
-       make install
-
-ADD run /usr/local/bin/
-ADD estimate_kmer /usr/local/bin/
-ADD Procfile /
-
-ENTRYPOINT ["run"]
+ENV TASKFILE     /usr/local/share/Taskfile
+ENV SCHEMA       /usr/local/share/assembler_schema.yaml
+ENV BIOBOX_EXEC  assemble.sh
