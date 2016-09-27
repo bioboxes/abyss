@@ -11,3 +11,12 @@ cd $(mktemp -d)
 
 eval abyss-pe name=genome ${FLAGS} in="${READS}"
 cp genome-contigs.fa ${OUTPUT}/contigs.fa
+
+cat << EOF > ${OUTPUT}/biobox.yaml
+version: 0.9.0
+arguments:
+  - fasta:
+    - id: contigs_1
+      value: contigs.fa
+      type: contigs
+EOF
