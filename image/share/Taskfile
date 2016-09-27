@@ -1,0 +1,3 @@
+default: k=64
+adaptive: k=$(estimate_kmer.sh ${READS})
+careful: k=96
